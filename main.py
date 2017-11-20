@@ -14,12 +14,17 @@ args = parser.parse_args(sys.argv[1:])
 r1 = requests.get('https://my.sa.ucsb.edu/gold/login.aspx')
 soup = bs4.BeautifulSoup(r1.text, 'html.parser')
 
-hidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + [
+hidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + ([
     ['ctl00%24pageContent%24PermPinLogin%24userNameText', args.user],
     ['ctl00%24pageContent%24PermPinLogin%24passwordText', args.password],
     ['ctl00%24pageContent%24PermPinLogin%24loginButton.x', '0'],
     ['ctl00%24pageContent%24PermPinLogin%24loginButton.y', '0']
-]
+]) if args.old else ([
+    ['ctl00%24pageContent%24userNameText', args.user],
+    ['ctl00%24pageContent%24passwordText', args.password],
+    ['ctl00%24pageContent%24loginButton.x', '0'],
+    ['ctl00%24pageContent%24loginButton.y', '0']
+])
 
 preBody = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in hidden]
 body = '&'.join(preBody)
