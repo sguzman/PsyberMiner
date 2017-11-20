@@ -2,7 +2,6 @@ import argparse
 import sys
 import requests
 import bs4
-import re
 
 parser = argparse.ArgumentParser(description='Pass your UCSB GOLD login information')
 
@@ -46,19 +45,19 @@ depts = [x['value'] for x in soup.find(id='pageContent_subjectAreaDropDown').fin
 
 
 def search(quarter, dept):
-    formHidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + [
+    form_hidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + [
         ['ctl00%24pageContent%24quarterDropDown', str(quarter)],
         ['ctl00%24pageContent%24subjectAreaDropDown', str(dept)],
         ['ctl00%24pageContent%24searchButton.x', '0'],
         ['ctl00%24pageContent%24searchButton.y', '0']
     ]
 
-    form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in formHidden]
-    formBody = '&'.join(form)
-    r = requests.post(courseUrl, headers=head, data=formBody, cookies=cookie, allow_redirects=False)
-    r = requests.get(resultsUrl, cookies=cookie, allow_redirects=False)
+    form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in form_hidden]
+    form_body = '&'.join(form)
+    requests.post(courseUrl, headers=head, data=form_body, cookies=cookie, allow_redirects=False)
+    req = requests.get(resultsUrl, cookies=cookie, allow_redirects=False)
 
-    return r
+    return req
 
 
 qurtDepts = [[x, y] for x in quarters for y in depts]
