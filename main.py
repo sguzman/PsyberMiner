@@ -39,6 +39,8 @@ cookie = r.cookies
 r = requests.get('https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx', cookies=cookie, allow_redirects=False)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
 
+quarters = [x['value'] for x in soup.find(id='pageContent_quarterDropDown').find_all('option')]
+depts = [x['value'] for x in soup.find(id='pageContent_subjectAreaDropDown').find_all('option')][1:]
 
 print(r.status_code)
 print(r.text)
