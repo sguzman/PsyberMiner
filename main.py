@@ -11,8 +11,9 @@ parser.add_argument('-o', '--old', action='store_true')
 
 args = parser.parse_args(sys.argv[1:])
 
-r1 = requests.get('https://my.sa.ucsb.edu/gold/login.aspx')
-soup = bs4.BeautifulSoup(r1.text, 'html.parser')
+loginUrl = 'https://my.sa.ucsb.edu/gold/login.aspx'
+r = requests.get(loginUrl)
+soup = bs4.BeautifulSoup(r.text, 'html.parser')
 
 hidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + ([
     ['ctl00%24pageContent%24PermPinLogin%24userNameText', args.user],
@@ -28,10 +29,16 @@ hidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] =
 
 preBody = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in hidden]
 body = '&'.join(preBody)
-print(body)
 
 head = {'Content-Type': 'application/x-www-form-urlencoded'}
-r2 = requests.post('https://my.sa.ucsb.edu/gold/login.aspx', headers=head, data=body, cookies=r1.cookies)
+r = requests.post(loginUrl, headers=head, data=body, cookies=r.cookies,
+                  allow_redirects=False)
 
-print(r2.status_code)
-print(r2.text)
+cookie = r.cookies
+
+r = requests.get('https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx', cookies=cookie, allow_redirects=False)
+soup = bs4.BeautifulSoup(r.text, 'html.parser')
+
+
+print(r.status_code)
+print(r.text)
