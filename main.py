@@ -31,16 +31,33 @@ preBody = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in hidden]
 body = '&'.join(preBody)
 
 head = {'Content-Type': 'application/x-www-form-urlencoded'}
-r = requests.post(loginUrl, headers=head, data=body, cookies=r.cookies,
-                  allow_redirects=False)
+r = requests.post(loginUrl, headers=head, data=body, cookies=r.cookies, allow_redirects=False)
 
 cookie = r.cookies
 
-r = requests.get('https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx', cookies=cookie, allow_redirects=False)
+courseUrl = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
+r = requests.get(courseUrl, cookies=cookie, allow_redirects=False)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
 
 quarters = [x['value'] for x in soup.find(id='pageContent_quarterDropDown').find_all('option')]
 depts = [x['value'] for x in soup.find(id='pageContent_subjectAreaDropDown').find_all('option')][1:]
 
+
+def search(quarter, dept):
+    formHidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + [
+        ['ctl00%24pageContent%24quarterDropDown', str(quarter)],
+        ['ctl00%24pageContent%24subjectAreaDropDown', str(dept)],
+        ['ctl00%24pageContent%24searchButton.x', '0'],
+        ['ctl00%24pageContent%24searchButton.y', '0']
+    ]
+
+    form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in formHidden]
+    formBody = '&'.join(form)
+    r = requests.post(courseUrl, headers=head, data=formBody, cookies=cookie, allow_redirects=False)
+
+    return r
+
+
+r = search(quarters[0], depts[0])
 print(r.status_code)
 print(r.text)
