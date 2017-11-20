@@ -69,9 +69,3 @@ coursetable = soup.find(id='pageContent_CourseList')
 courses = coursetable.find_all(attrs={'class': 'datatable'})
 for i in courses:
     print(i.text)
-
-
-
-
-print(r.status_code)
-print(r.text)
