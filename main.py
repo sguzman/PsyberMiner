@@ -2,6 +2,7 @@ import argparse
 import sys
 import requests
 import bs4
+import re
 
 parser = argparse.ArgumentParser(description='Pass your UCSB GOLD login information')
 
@@ -36,6 +37,7 @@ r = requests.post(loginUrl, headers=head, data=body, cookies=r.cookies, allow_re
 cookie = r.cookies
 
 courseUrl = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
+resultsUrl = 'https://my.sa.ucsb.edu/gold/ResultsFindCourses.aspx'
 r = requests.get(courseUrl, cookies=cookie, allow_redirects=False)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
 
@@ -54,10 +56,22 @@ def search(quarter, dept):
     form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in formHidden]
     formBody = '&'.join(form)
     r = requests.post(courseUrl, headers=head, data=formBody, cookies=cookie, allow_redirects=False)
+    r = requests.get(resultsUrl, cookies=cookie, allow_redirects=False)
 
     return r
 
 
+qurtDepts = [[x, y] for x in quarters for y in depts]
+
 r = search(quarters[0], depts[0])
+soup = bs4.BeautifulSoup(r.text, 'html.parser')
+coursetable = soup.find(id='pageContent_CourseList')
+courses = coursetable.find_all(attrs={'class': 'datatable'})
+for i in courses:
+    print(i.text)
+
+
+
+
 print(r.status_code)
 print(r.text)
