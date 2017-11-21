@@ -1,6 +1,7 @@
 import argparse
 import sys
 import requests
+import grequests
 import bs4
 import re
 
@@ -55,23 +56,24 @@ def search(quarter, dept):
 
     form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in form_hidden]
     form_body = '&'.join(form)
-    requests.post(courseUrl, headers=head, data=form_body, cookies=cookie, allow_redirects=False)
-    req = requests.get(resultsUrl, cookies=cookie, allow_redirects=False)
+    greq = grequests.post(courseUrl, headers=head, data=form_body, cookies=cookie)
 
-    return req
+    return greq
 
 
 qurtDepts = [[x, y] for x in quarters for y in depts]
+gRequests = [search('20174', i) for i in depts]
 
-r = search(quarters[0], depts[0])
-soup = bs4.BeautifulSoup(r.text, 'html.parser')
-coursetable = soup.find(id='pageContent_CourseList')
-courses = coursetable.find_all(attrs={'class': 'datatable'})
-coursesText = [i.text.strip() for i in courses]
-coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
-coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
-coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
-coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
-coursesText = [re.sub('\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
-coursesText = [i.split('WILLSPLITHERE') for i in coursesText]
-print(coursesText)
+getty = grequests.map(gRequests, size=32)
+for g in getty:
+    soup = bs4.BeautifulSoup(g.text, 'html.parser')
+    coursetable = soup.find(id='pageContent_CourseList')
+    courses = coursetable.find_all(attrs={'class': 'datatable'})
+    coursesText = [i.text.strip() for i in courses]
+    coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in
+                   coursesText]
+    coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+    coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+    coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+    coursesText = [re.sub('\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+    coursesText = [i.split('WILLSPLITHERE') for i in coursesText]
