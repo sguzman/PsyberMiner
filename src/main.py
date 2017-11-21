@@ -3,32 +3,10 @@ import grequests
 import bs4
 import re
 import argv
+import login
 
 args = argv.parse()
-
-loginUrl = 'https://my.sa.ucsb.edu/gold/login.aspx'
-r = requests.get(loginUrl)
-soup = bs4.BeautifulSoup(r.text, 'html.parser')
-
-hidden = [[x['name'], x['value']] for x in soup.find_all('input') if x['type'] == 'hidden'] + ([
-    ['ctl00%24pageContent%24PermPinLogin%24userNameText', args.user],
-    ['ctl00%24pageContent%24PermPinLogin%24passwordText', args.password],
-    ['ctl00%24pageContent%24PermPinLogin%24loginButton.x', '0'],
-    ['ctl00%24pageContent%24PermPinLogin%24loginButton.y', '0']
-]) if args.old else ([
-    ['ctl00%24pageContent%24userNameText', args.user],
-    ['ctl00%24pageContent%24passwordText', args.password],
-    ['ctl00%24pageContent%24loginButton.x', '0'],
-    ['ctl00%24pageContent%24loginButton.y', '0']
-])
-
-preBody = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in hidden]
-body = '&'.join(preBody)
-
-head = {'Content-Type': 'application/x-www-form-urlencoded'}
-r = requests.post(loginUrl, headers=head, data=body, cookies=r.cookies, allow_redirects=False)
-
-cookie = r.cookies
+cookie = login.cookie(args)
 
 courseUrl = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
 resultsUrl = 'https://my.sa.ucsb.edu/gold/ResultsFindCourses.aspx'
