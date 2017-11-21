@@ -1,6 +1,7 @@
 import argparse
 import sys
 
+
 def parse():
     parser = argparse.ArgumentParser(description='Pass your UCSB GOLD login information')
 
