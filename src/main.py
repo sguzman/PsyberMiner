@@ -1,17 +1,10 @@
-import argparse
-import sys
 import requests
 import grequests
 import bs4
 import re
+import argv
 
-parser = argparse.ArgumentParser(description='Pass your UCSB GOLD login information')
-
-parser.add_argument('-u', '--user')
-parser.add_argument('-p', '--password')
-parser.add_argument('-o', '--old', action='store_true')
-
-args = parser.parse_args(sys.argv[1:])
+args = argv.parse()
 
 loginUrl = 'https://my.sa.ucsb.edu/gold/login.aspx'
 r = requests.get(loginUrl)
