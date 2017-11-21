@@ -1,8 +1,10 @@
 import requests
 import bs4
+import argv
 
 
-def cookie(args):
+def getcookie():
+    args = argv.args
     login_url = 'https://my.sa.ucsb.edu/gold/login.aspx'
     r = requests.get(login_url)
     soup = bs4.BeautifulSoup(r.text, 'html.parser')
@@ -26,3 +28,5 @@ def cookie(args):
     r = requests.post(login_url, headers=head, data=body, cookies=r.cookies, allow_redirects=False)
 
     return r
+
+cookie = getcookie().cookies
