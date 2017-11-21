@@ -26,6 +26,7 @@ def search(quarter, dept):
         ['ctl00%24pageContent%24searchButton.y', '0']
     ]
 
+    head = {'Content-Type': 'application/x-www-form-urlencoded'}
     form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in form_hidden]
     form_body = '&'.join(form)
     greq = grequests.post(courseUrl, headers=head, data=form_body, cookies=cookie)
@@ -33,7 +34,7 @@ def search(quarter, dept):
     return greq
 
 
-qurtDepts = [[x, y] for x in quarters for y in depts]
+qurtDepts = [[x, y] for x in quarts for y in depts]
 gRequests = [search('20174', i) for i in depts]
 
 getty = grequests.map(gRequests, size=32)
