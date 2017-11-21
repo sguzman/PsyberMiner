@@ -4,6 +4,7 @@ import bs4
 import re
 import argv
 import login
+import dropdown
 
 args = argv.parse()
 cookie = login.cookie(args)
@@ -13,8 +14,8 @@ resultsUrl = 'https://my.sa.ucsb.edu/gold/ResultsFindCourses.aspx'
 r = requests.get(courseUrl, cookies=cookie, allow_redirects=False)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
 
-quarters = [x['value'] for x in soup.find(id='pageContent_quarterDropDown').find_all('option')]
-depts = [x['value'] for x in soup.find(id='pageContent_subjectAreaDropDown').find_all('option')][1:]
+quarts = dropdown.quarters(soup)
+depts = dropdown.departments(soup)
 
 
 def search(quarter, dept):
