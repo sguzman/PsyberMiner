@@ -6,4 +6,4 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - python main.py -u "$USER" -p "$PASS" -o
+  - python src/main.py -u "$USER" -p "$PASS" -o
