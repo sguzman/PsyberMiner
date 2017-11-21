@@ -12,3 +12,5 @@ def parse():
     argv = parser.parse_args(sys.argv[1:])
 
     return argv
+
+args = parse()
