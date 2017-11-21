@@ -13,8 +13,8 @@ def resoup(r):
 
 def quarterscrape():
     global soup
-    quarters = [x['value'] for x in soup.find(id='pageContent_quarterDropDown').find_all('option')]
-    return quarters
+    quarter_list = [x['value'] for x in soup.find(id='pageContent_quarterDropDown').find_all('option')]
+    return quarter_list
 
 
 def departmentscrape():
@@ -37,8 +37,8 @@ def search(quarter, dept):
     head = {'Content-Type': 'application/x-www-form-urlencoded'}
     form = [x[0] + '=' + requests.utils.quote(x[1], safe='') for x in form_hidden]
     form_body = '&'.join(form)
-    courseUrl = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
-    greq = grequests.post(courseUrl, headers=head, data=form_body, cookies=cookie)
+    course_url = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
+    greq = grequests.post(course_url, headers=head, data=form_body, cookies=cookie)
 
     return greq
 
@@ -46,24 +46,26 @@ def search(quarter, dept):
 def init():
     global cookie
 
-    courseUrl = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
-    r = requests.get(courseUrl, cookies=cookie, allow_redirects=False)
+    course_url = 'https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx'
+    r = requests.get(course_url, cookies=cookie, allow_redirects=False)
     return r
 
 
-def getrequests(list):
+def getrequests(alist):
     global cookie
 
-    return (search(x[0], x[1]) for x in list)
+    return (search(x[0], x[1]) for x in alist)
 
-def getrequestslist(list):
+
+def getrequestslist(alist):
     global cookie
 
-    return [search(x[0], x[1]) for x in list]
+    return [search(x[0], x[1]) for x in alist]
 
 
-def map(reqs):
+def mapreq(reqs):
     return grequests.map(reqs, size=32)
+
 
 soup = resoup(init())
 departments = departmentscrape()

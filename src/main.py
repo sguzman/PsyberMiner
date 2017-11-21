@@ -4,7 +4,7 @@ import search
 
 greqs = search.getrequestslist(['20174', i] for i in search.departments)
 
-getty = search.map(greqs)
+getty = search.mapreq(greqs)
 for g in getty:
     soup = search.resoup(g)
     coursetable = soup.find(id='pageContent_CourseList')

@@ -29,4 +29,5 @@ def getcookie():
 
     return r
 
+
 cookie = getcookie().cookies
