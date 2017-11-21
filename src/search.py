@@ -1,14 +1,10 @@
 import requests
 import grequests
 import login
-import bs4
+import soup
 
 
 cookie = login.cookie
-
-
-def resoup(r):
-    return bs4.BeautifulSoup(r.text, 'html.parser')
 
 
 def quarterscrape():
@@ -67,7 +63,7 @@ def mapreq(reqs):
     return grequests.map(reqs, size=32)
 
 
-soup = resoup(init())
+soup = soup.re(init())
 departments = departmentscrape()
 quarters = quarterscrape()
 qurtDepts = [[x, y] for x in quarters for y in departments]
