@@ -2,6 +2,7 @@ import argparse
 import sys
 import requests
 import bs4
+import re
 
 parser = argparse.ArgumentParser(description='Pass your UCSB GOLD login information')
 
@@ -66,5 +67,11 @@ r = search(quarters[0], depts[0])
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
 coursetable = soup.find(id='pageContent_CourseList')
 courses = coursetable.find_all(attrs={'class': 'datatable'})
-for i in courses:
-    print(i.text)
+coursesText = [i.text.strip() for i in courses]
+coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+coursesText = [re.sub('\n\n\n\n\n\n\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+coursesText = [re.sub('\n\n\n\n', 'WILLSPLITHERE', i) for i in coursesText]
+coursesText = [i.split('WILLSPLITHERE') for i in coursesText]
+print(coursesText)
